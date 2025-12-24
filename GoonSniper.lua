@@ -3,7 +3,7 @@ local LogoID = "rbxassetid://0"
 
 -- [1] CONFIGURATION: YOUR GITHUB LINK
 -- I removed the specific commit hash so this always points to the LATEST version on GitHub
-local KeyURL = "https://gist.githubusercontent.com/visualaiinfo-hue/5a1b8a1d32a3e9360a7d3d26cd75123e/raw/gistfile1.txt" 
+local KeyURL = "https://gist.githubusercontent.com/visualaiinfo-hue/1ffae80cd603bc3c1d013eb0ab03b479/raw/c439e3a07a71b67dc618291dccf208f38df5f814/gistfile1.txt" 
 
 -- [0] INITIALIZATION & SAFETY
 if not game:IsLoaded() then game.Loaded:Wait() end
