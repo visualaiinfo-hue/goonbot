@@ -1,6 +1,6 @@
--- GOON SNIPER - MINIMIZE FIX (v2.4)
+-- GOON SNIPER - EXTENDED PET DATABASE (v2.5)
 local LogoID = "rbxassetid://0" 
-local Version = "v2.4"
+local Version = "v2.5"
 
 -- [0] INITIALIZATION
 if not game:IsLoaded() then game.Loaded:Wait() end
@@ -17,41 +17,52 @@ if not PlayerGui then PlayerGui = Player:WaitForChild("PlayerGui") end
 local ConfigFile = "goon_config_dev.json"
 local TradeWorldID = 129954712878723 
 
--- [1] PET DATABASE
+-- [1] PET DATABASE (FULLY UPDATED)
 local PetList = {
-    "Amethyst Beetle", "Ankylosaurus", "Archling", "Arctic Fox", "Asteris", "Axolotl", 
+    "Amethyst Beetle", "Ankylosaurus", "Apple Gazelle", "Archling", "Arctic Fox", "Asteris", "Axolotl", 
     "Bacon Pig", "Badger", "Bagel Bunny", "Bald Eagle", "Barn Owl", "Bat", "Bear Bee", 
     "Bearded Dragon", "Bee", "Black Bunny", "Blood Hedgehog", "Blood Kiwi", "Blood Owl", 
     "Blue Jay", "Bone Dog", "Brontosaurus", "Brown Mouse", "Bunny", "Butterfly", "Camel", 
-    "Cape Buffalo", "Capybara", "Cardinal", "Cat", "Caterpillar", "Chicken", "Chicken Zombie", 
+    "Cape Buffalo", "Capybara", "Cardinal", "Cat", "Caterpillar", "Chicken", "Chicken Zombie", "Chimera",
     "Chimpanzee", "Chipmunk", "Christmas Gorilla", "Chubby Chipmunk", "Cockatrice", 
     "Cocoa Cat", "Cooked Owl", "Corrupted Kitsune", "Corrupted Kodama", "Cow", "Crab", 
     "Crocodile", "Crow", "Dairy Cow", "Dark Spriggan", "Deer", "Diamond Panther", 
     "Dilophosaurus", "Disco Bee", "Dog", "Dragonfly", "Echo Frog", "Eggnog Chick", "Elk", 
-    "Emerald Snake", "Faestar", "Farmer Chipmunk", "Fennec Fox", "Flamingo", "Football", 
+    "Emerald Snake", "Faestar", "Farmer Chipmunk", "Fennec Fox", "Festive Frost Squirrel",
+    "Festive Ice Golem", "Festive Moose", "Festive Nutcracker", "Festive Partridge", "Festive Reindeer",
+    "Festive Santa Bear", "Festive Turtle Dove", "Festive Wendigo", "Flamingo", "Flower Spider", "Football", 
     "Fortune Squirrel", "French Fry Ferret", "French Hen", "Frog", "Frost Dragon", 
-    "Frost Squirrel", "Gecko", "Ghost Bear", "Giant Ant", "Gift Rat", "Giraffe", "Gnome", 
-    "Goat", "Goblin", "Golden Goose", "Golden Lab", "Gorilla Chef", "Grey Mouse", "Griffin", 
-    "Grizzly Bear", "Hamster", "Hedgehog", "Hex Serpent", "Hippo", "Honey Bee", 
-    "Hotdog Daschund", "Hummingbird", "Hyacinth Macaw", "Hyena", "Hyrax", "Idol Chipmunk", 
-    "Iguana", "Iguanodon", "Imp", "Jackalope", "Kappa", "Kitsune", "Kiwi", "Kodama", "Koi", 
-    "Krampus", "Ladybug", "Lemon Lion", "Lich", "Lion", "Mallard", "Mandrake", "Maneki-neko", 
-    "Marmot", "Meerkat", "Mimic Octopus", "Mistletoad", "Mizuchi", "Mole", "Monkey", 
-    "Moon Cat", "Moth", "Mummy", "Night Owl", "Nihonzaru", "Nutcracker", "Orange Tabby", 
-    "Orangutan", "Ostrich", "Owl", "Oxpecker", "Pachycephalosaurus", "Pack Bee", 
-    "Pancake Mole", "Panda", "Parasaurolophus", "Peacock", "Penguin", "Petal Bee", "Pig", 
-    "Pixie", "Polar Bear", "Praying Mantis", "Pterodactyl", "Pumpkin Rat", "Queen Bee", 
-    "Raccoon", "Raiju", "Rainbow Dilophosaurus", "Rake", "Raptor", "Reaper", "Red Fox", 
-    "Red Giant Ant", "Red Panda", "Red-Nosed Reindeer", "Rhino", "Robin", "Rooster", 
-    "Ruby Squid", "Salmon", "Sand Snake", "Sapphire Macaw", "Scarab", "Scarlet Macaw", 
-    "Sea Otter", "Sea Turtle", "Seagull", "Seal", "Seedling", "Shiba Inu", "Shroomie", 
-    "Silver Dragonfly", "Silver Monkey", "Snail", "Snow Bunny", "Snowman Builder", 
-    "Snowman Soldier", "Space Squirrel", "Spaghetti Sloth", "Specter", "Spider", 
-    "Spinosaurus", "Spotted Deer", "Spriggan", "Squirrel", "Starfish", "Stegosaurus", 
-    "Sugar Glider", "Summer Kiwi", "Suncoil", "Sunny-Side Chicken", "Sushi Bear", "Swan", 
-    "T-Rex", "Tanchozuru", "Tanuki", "Tarantula Hawk", "Tiger", "Tomb Marmot", "Topaz Snail", 
-    "Toucan", "Tree Frog", "Triceratops", "Tsuchinoko", "Turtle", "Wasp", "Water Buffalo", 
-    "Wendigo", "Wisp", "Wolf", "Woodpecker", "Woody", "Yeti", "Zebra"
+    "Frost Squirrel", "Gecko", "Ghost Bear", "Ghostly Bat", "Ghostly Black Cat", "Ghostly Bone Dog", 
+    "Ghostly Dark Spriggan", "Ghostly Headless Horseman", "Ghostly Mummy", "Ghostly Scarab", 
+    "Ghostly Spider", "Ghostly Tomb Marmot", "Giant Ant", "Gift Rat", "Giraffe", "Glass Cat", "Glass Dog", 
+    "Glimmering Sprite", "Gnome", "Goat", "Goblin", "Goblin Miner", "Golden Goose", "Golden Lab", 
+    "Gorilla Chef", "Greenbloom Bird", "Grey Mouse", "Griffin", "Grizzly Bear", "Hamster", 
+    "Headless Horseman", "Hedgehog", "Hex Serpent", "Hippo", "Honey Bee", "Hotdog Daschund", 
+    "Hummingbird", "Hyacinth Macaw", "Hyena", "Hyrax", "Idol Chipmunk", "Iguana", "Iguanodon", 
+    "Imp", "Jackalope", "Junkbot", "Kappa", "Kitsune", "Kiwi", "Kodama", "Koi", "Krampus", 
+    "Ladybug", "Lemon Lion", "Lich", "Lion", "Lobster Thermidor", "Luminous Sprite", "Mallard", 
+    "Mandrake", "Maneki-neko", "Marmot", "Meerkat", "Mimic Octopus", "Mistletoad", "Mizuchi", 
+    "Mole", "Monkey", "Moon Cat", "Moss Leopard", "Moth", "Mummy", "Night Owl", "Nihonzaru", 
+    "Nutcracker", "Orange Tabby", "Orangutan", "Ostrich", "Owl", "Oxpecker", "Pachycephalosaurus", 
+    "Pack Bee", "Pancake Mole", "Panda", "Parasaurolophus", "Peacock", "Penguin", "Petal Bee", 
+    "Phoenix", "Pig", "Pixie", "Polar Bear", "Praying Mantis", "Pterodactyl", "Pumpkin Rat", 
+    "Queen Bee", "Raccoon", "Raiju", "Rainbow Ankylosaurus", "Rainbow Arctic Fox", "Rainbow Bearded Dragon", 
+    "Rainbow Chinchilla", "Rainbow Christmas Gorilla", "Rainbow Clam", "Rainbow Corrupted Kitsune", 
+    "Rainbow Dilophosaurus", "Rainbow Elephant", "Rainbow Elk", "Rainbow French Hen", "Rainbow Frost Dragon", 
+    "Rainbow Giraffe", "Rainbow Griffin", "Rainbow Hotdog", "Rainbow Hydra", "Rainbow Iguanodon", 
+    "Rainbow Krampus", "Rainbow Lobster", "Rainbow Magpie", "Rainbow Mizuchi", "Rainbow Oxpecker", 
+    "Rainbow Pachycephalosaurus", "Rainbow Parasaurolophus", "Rainbow Phoenix", "Rainbow Rhino", 
+    "Rainbow Shroomie", "Rainbow Snow Bunny", "Rainbow Spinosaurus", "Rainbow Stag Beetle", 
+    "Rainbow Zebra", "Rake", "Raptor", "Reaper", "Red Fox", "Red Giant Ant", "Red Panda", 
+    "Red-Nosed Reindeer", "Rhino", "Robin", "Rooster", "Ruby Squid", "Salmon", "Sand Snake", 
+    "Sapphire Macaw", "Scarab", "Scarlet Macaw", "Sea Otter", "Sea Turtle", "Seagull", "Seal", 
+    "Seedling", "Shiba Inu", "Shroomie", "Silver Dragonfly", "Silver Monkey", "Snail", "Snow Bunny", 
+    "Snowman Builder", "Snowman Soldier", "Space Squirrel", "Spaghetti Sloth", "Specter", "Spider", 
+    "Spinosaurus", "Spotted Deer", "Spriggan", "Squirrel", "Starfish", "Stegosaurus", "Sugar Glider", 
+    "Summer Kiwi", "Suncoil", "Sunny-Side Chicken", "Sushi Bear", "Swan", "T-Rex", "Tanchozuru", 
+    "Tanuki", "Tarantula Hawk", "Tiger", "Tomb Marmot", "Topaz Snail", "Toucan", "Tree Frog", 
+    "Triceratops", "Tsuchinoko", "Turtle", "Verdant Goose", "Verdant Lion", "Verdant Sunlion", 
+    "Wasp", "Water Buffalo", "Wendigo", "Wisp", "Wolf", "Woodpecker", "Woody", "Worm", "Yeti", "Zebra"
 }
 table.sort(PetList)
 
@@ -95,9 +106,11 @@ end
 local function LoadData()
     local liveData = GCScan()
     if liveData then
+        -- [LOG] Success Log
         print("✅ [GOON SNIPER] Data Source: Direct Memory Scan (GC)")
         getgenv().boothData = liveData
     else
+        -- [LOG] Fallback Log
         print("⚠️ [GOON SNIPER] Data Source: Fallback Listener (DataStream2)")
         getgenv().boothData = {Booths = {}, Players = {}}
         local l_DataStream2_0 = ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("DataStream2")
