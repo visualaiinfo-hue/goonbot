@@ -1,6 +1,6 @@
--- GOON SNIPER - CIRCLE MINIMIZE (v3.3)
+-- GOON SNIPER - CIRCLE MINIMIZE (v3.4 - Settings Update)
 local LogoID = "rbxassetid://0" 
-local Version = "v2.8"
+local Version = "v2.9"
 
 -- [0] INITIALIZATION
 if not game:IsLoaded() then game.Loaded:Wait() end
@@ -71,12 +71,20 @@ table.sort(PetList)
 getgenv().SniperEnabled = false
 getgenv().CurrentFilters = {}
 getgenv().LastFound = tick()
+-- New variables for settings
+getgenv().WebhookURL = "https://discord.com/api/webhooks/1453157686467367085/YwXMx09qDmAEnKYk_7KhtvAYWLPYWLc2fynfiGwPxyUoCcIBUwDUZkk9M3_PJ4DBim0w"
+getgenv().HopDelay = 60
 local SeenListings = {}
 
 -- [3] CONFIGURATION
 local function SaveConfig()
     if writefile then
-        local data = { Enabled = getgenv().SniperEnabled, Filters = getgenv().CurrentFilters }
+        local data = { 
+            Enabled = getgenv().SniperEnabled, 
+            Filters = getgenv().CurrentFilters,
+            Webhook = getgenv().WebhookURL,
+            HopDelay = getgenv().HopDelay
+        }
         writefile(ConfigFile, HttpService:JSONEncode(data))
     end
 end
@@ -87,6 +95,8 @@ local function LoadConfig()
             local result = HttpService:JSONDecode(readfile(ConfigFile))
             getgenv().SniperEnabled = result.Enabled
             getgenv().CurrentFilters = result.Filters or {}
+            if result.Webhook and result.Webhook ~= "" then getgenv().WebhookURL = result.Webhook end
+            if result.HopDelay then getgenv().HopDelay = tonumber(result.HopDelay) end
         end)
     end
 end
@@ -131,7 +141,12 @@ local function Sniped(PetName, Weight, Price)
     }
     local newData = HttpService:JSONEncode({embeds={Embed_Data}})
     local request = http_request or request or HttpPost or syn.request
-    request({Url = "https://discord.com/api/webhooks/1453157686467367085/YwXMx09qDmAEnKYk_7KhtvAYWLPYWLc2fynfiGwPxyUoCcIBUwDUZkk9M3_PJ4DBim0w", Body = newData, Method = "POST", Headers = {["content-type"] = "application/json"}})
+    
+    -- Check for URL before sending
+    local url = getgenv().WebhookURL
+    if url and url ~= "" and url:find("http") then
+        request({Url = url, Body = newData, Method = "POST", Headers = {["content-type"] = "application/json"}})
+    end
 end
 
 local function Hop()
@@ -275,6 +290,17 @@ local function LoadSniperUI()
     VerLabel.TextSize = 12
     VerLabel.TextXAlignment = Enum.TextXAlignment.Right
 
+    -- [NEW] GEAR / SETTINGS BUTTON
+    local SettingsBtn = Instance.new("TextButton")
+    SettingsBtn.Parent = MainFrame
+    SettingsBtn.Text = "⚙️" -- Gear Icon
+    SettingsBtn.BackgroundTransparency = 1
+    SettingsBtn.Position = UDim2.new(1, -110, 0, 10) -- To the left of Version
+    SettingsBtn.Size = UDim2.new(0, 30, 0, 25)
+    SettingsBtn.Font = Enum.Font.GothamBold
+    SettingsBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+    SettingsBtn.TextSize = 18
+
     -- [UPDATED] MINIMIZE BUTTON LOGIC
     local MinBtn = Instance.new("TextButton")
     MinBtn.Parent = MainFrame
@@ -403,6 +429,103 @@ local function LoadSniperUI()
     HopBtn.Font = Enum.Font.GothamBold
     Instance.new("UICorner", HopBtn).CornerRadius = UDim.new(0,6)
 
+    -- [NEW] SETTINGS FRAME OVERLAY
+    local SettingsFrame = Instance.new("Frame")
+    SettingsFrame.Parent = MainFrame
+    SettingsFrame.Size = UDim2.new(1, 0, 1, 0)
+    SettingsFrame.BackgroundColor3 = DarkBg
+    SettingsFrame.Visible = false
+    SettingsFrame.ZIndex = 20
+    Instance.new("UICorner", SettingsFrame).CornerRadius = UDim.new(0, 8)
+
+    local SettTitle = Instance.new("TextLabel")
+    SettTitle.Parent = SettingsFrame
+    SettTitle.Text = "ADVANCED OPTIONS"
+    SettTitle.TextColor3 = Color3.fromRGB(200, 200, 200)
+    SettTitle.Size = UDim2.new(1, 0, 0, 40)
+    SettTitle.BackgroundTransparency = 1
+    SettTitle.Font = Enum.Font.GothamBlack
+    SettTitle.TextSize = 18
+    SettTitle.ZIndex = 21
+
+    -- Webhook Input
+    local WebhookLbl = Instance.new("TextLabel")
+    WebhookLbl.Parent = SettingsFrame
+    WebhookLbl.Text = "Discord Webhook URL:"
+    WebhookLbl.Size = UDim2.new(1, -30, 0, 20)
+    WebhookLbl.Position = UDim2.new(0, 15, 0, 50)
+    WebhookLbl.TextColor3 = Color3.fromRGB(150,150,150)
+    WebhookLbl.BackgroundTransparency = 1
+    WebhookLbl.Font = Enum.Font.Gotham
+    WebhookLbl.TextXAlignment = Enum.TextXAlignment.Left
+    WebhookLbl.ZIndex = 21
+
+    local WebhookBox = Instance.new("TextBox")
+    WebhookBox.Parent = SettingsFrame
+    WebhookBox.Text = getgenv().WebhookURL or ""
+    WebhookBox.PlaceholderText = "Paste Webhook Here..."
+    WebhookBox.Size = UDim2.new(1, -30, 0, 35)
+    WebhookBox.Position = UDim2.new(0, 15, 0, 75)
+    WebhookBox.BackgroundColor3 = Color3.fromRGB(30,30,30)
+    WebhookBox.TextColor3 = Color3.fromRGB(255,255,255)
+    WebhookBox.TextXAlignment = Enum.TextXAlignment.Left
+    WebhookBox.TextSize = 12
+    WebhookBox.ClipsDescendants = true
+    WebhookBox.ZIndex = 21
+    Instance.new("UICorner", WebhookBox).CornerRadius = UDim.new(0,6)
+
+    -- Hop Delay Input
+    local HopLbl = Instance.new("TextLabel")
+    HopLbl.Parent = SettingsFrame
+    HopLbl.Text = "Server Hop Delay (Seconds):"
+    HopLbl.Size = UDim2.new(1, -30, 0, 20)
+    HopLbl.Position = UDim2.new(0, 15, 0, 120)
+    HopLbl.TextColor3 = Color3.fromRGB(150,150,150)
+    HopLbl.BackgroundTransparency = 1
+    HopLbl.Font = Enum.Font.Gotham
+    HopLbl.TextXAlignment = Enum.TextXAlignment.Left
+    HopLbl.ZIndex = 21
+
+    local HopBox = Instance.new("TextBox")
+    HopBox.Parent = SettingsFrame
+    HopBox.Text = tostring(getgenv().HopDelay)
+    HopBox.PlaceholderText = "60"
+    HopBox.Size = UDim2.new(1, -30, 0, 35)
+    HopBox.Position = UDim2.new(0, 15, 0, 145)
+    HopBox.BackgroundColor3 = Color3.fromRGB(30,30,30)
+    HopBox.TextColor3 = Color3.fromRGB(255,255,255)
+    HopBox.TextSize = 14
+    HopBox.ZIndex = 21
+    Instance.new("UICorner", HopBox).CornerRadius = UDim.new(0,6)
+
+    -- Save/Close Button
+    local CloseSettBtn = Instance.new("TextButton")
+    CloseSettBtn.Parent = SettingsFrame
+    CloseSettBtn.Text = "SAVE & CLOSE"
+    CloseSettBtn.Size = UDim2.new(1, -30, 0, 40)
+    CloseSettBtn.Position = UDim2.new(0, 15, 1, -55)
+    CloseSettBtn.BackgroundColor3 = NeonGreen
+    CloseSettBtn.TextColor3 = DarkBg
+    CloseSettBtn.Font = Enum.Font.GothamBlack
+    CloseSettBtn.TextSize = 16
+    CloseSettBtn.ZIndex = 21
+    Instance.new("UICorner", CloseSettBtn).CornerRadius = UDim.new(0,6)
+
+    -- Settings Logic
+    SettingsBtn.MouseButton1Click:Connect(function()
+        SettingsFrame.Visible = true
+        WebhookBox.Text = getgenv().WebhookURL
+        HopBox.Text = tostring(getgenv().HopDelay)
+    end)
+
+    CloseSettBtn.MouseButton1Click:Connect(function()
+        getgenv().WebhookURL = WebhookBox.Text
+        local delayNum = tonumber(HopBox.Text)
+        if delayNum then getgenv().HopDelay = delayNum end
+        SaveConfig()
+        SettingsFrame.Visible = false
+    end)
+
     -- Logic
     local SelectedPet = nil
     
@@ -483,10 +606,12 @@ local function LoadSniperUI()
                     end
                 else
                     pcall(MainLoop)
-                    if tick() - getgenv().LastFound > 60 then
+                    -- [UPDATED] HOP DELAY LOGIC
+                    local delay = getgenv().HopDelay or 60
+                    if tick() - getgenv().LastFound > delay then
                         StatusLbl.Text = "SERVER DRY - HOPPING..."
                         Hop()
-                        getgenv().LastFound = tick() + 60
+                        getgenv().LastFound = tick() + delay
                     end
                 end
             end
