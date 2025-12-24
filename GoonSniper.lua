@@ -1,5 +1,6 @@
--- GOON SNIPER - WHITE TEXT FIX
+-- GOON SNIPER - VERSIONED (v1.5)
 local LogoID = "rbxassetid://0" 
+local Version = "v1.5" -- [NEW] Version Variable
 
 -- [0] INITIALIZATION
 if not game:IsLoaded() then game.Loaded:Wait() end
@@ -179,16 +180,29 @@ local function LoadSniperUI()
     MainFrame.Active = true; MainFrame.Draggable = true
     Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 8)
 
+    -- Header
     local Title = Instance.new("TextLabel")
     Title.Parent = MainFrame
-    Title.Text = "GOON SNIPER DEV"
+    Title.Text = "GOON SNIPER"
     Title.TextColor3 = Color3.fromRGB(50, 255, 100)
-    Title.Size = UDim2.new(1, -50, 0, 25)
+    Title.Size = UDim2.new(1, -70, 0, 25) -- Adjusted width
     Title.Position = UDim2.new(0, 15, 0, 10)
     Title.BackgroundTransparency = 1
     Title.Font = Enum.Font.GothamBlack
     Title.TextXAlignment = Enum.TextXAlignment.Left
     Title.TextSize = 18
+
+    -- [NEW] Version Number
+    local VerLabel = Instance.new("TextLabel")
+    VerLabel.Parent = MainFrame
+    VerLabel.Text = Version
+    VerLabel.TextColor3 = Color3.fromRGB(100, 100, 100)
+    VerLabel.Size = UDim2.new(0, 40, 0, 25)
+    VerLabel.Position = UDim2.new(1, -75, 0, 10) -- Top right
+    VerLabel.BackgroundTransparency = 1
+    VerLabel.Font = Enum.Font.GothamBold
+    VerLabel.TextSize = 12
+    VerLabel.TextXAlignment = Enum.TextXAlignment.Right
 
     local MinBtn = Instance.new("TextButton")
     MinBtn.Parent = MainFrame
@@ -312,7 +326,7 @@ local function LoadSniperUI()
         b.Size = UDim2.new(1,0,0,30); 
         b.Text = p; 
         b.BackgroundColor3 = Color3.fromRGB(30,30,30); 
-        b.TextColor3 = Color3.fromRGB(255,255,255) -- [FIX] Set to PURE WHITE
+        b.TextColor3 = Color3.fromRGB(255,255,255) -- White Text
         b.MouseButton1Click:Connect(function() SelectedPet = p; DropdownBtn.Text = p; DropdownFrame.Visible = false end)
     end
 
