@@ -1,6 +1,6 @@
--- GOON SNIPER - EXTENDED PET DATABASE (v2.5)
+-- GOON SNIPER - AUTO CLOSE LOADING SCREEN (v2.6)
 local LogoID = "rbxassetid://0" 
-local Version = "v2.5"
+local Version = "v2.6"
 
 -- [0] INITIALIZATION
 if not game:IsLoaded() then game.Loaded:Wait() end
@@ -9,6 +9,7 @@ local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TeleportService = game:GetService("TeleportService")
+local VirtualInputManager = game:GetService("VirtualInputManager") -- [NEW] For auto-clicking
 local Player = Players.LocalPlayer
 
 local PlayerGui = Player:WaitForChild("PlayerGui", 10)
@@ -106,11 +107,9 @@ end
 local function LoadData()
     local liveData = GCScan()
     if liveData then
-        -- [LOG] Success Log
         print("✅ [GOON SNIPER] Data Source: Direct Memory Scan (GC)")
         getgenv().boothData = liveData
     else
-        -- [LOG] Fallback Log
         print("⚠️ [GOON SNIPER] Data Source: Fallback Listener (DataStream2)")
         getgenv().boothData = {Booths = {}, Players = {}}
         local l_DataStream2_0 = ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("DataStream2")
@@ -450,6 +449,45 @@ local function LoadSniperUI()
                     end
                 end
             end
+        end
+    end)
+    
+    -- [NEW] AUTO CLOSE LOADING SCREEN LOGIC
+    task.spawn(function()
+        while true do
+            task.wait(1)
+            pcall(function()
+                local PGui = Player:WaitForChild("PlayerGui", 5)
+                if not PGui then return end
+                
+                -- 1. Hide frames named "Loading" or similar
+                for _, g in pairs(PGui:GetChildren()) do
+                    if g:IsA("ScreenGui") and g.Enabled then
+                        local name = g.Name:lower()
+                        if name:find("loading") or name:find("intro") then
+                            g.Enabled = false
+                        end
+                    end
+                end
+
+                -- 2. Click "X" buttons on ANY visible GUI
+                -- This covers the specific "X" seen in the image
+                local Targets = {"Close", "X", "Exit", "CloseButton"}
+                for _, tName in pairs(Targets) do
+                    local btn = PGui:FindFirstChild(tName, true)
+                    if btn and (btn:IsA("ImageButton") or btn:IsA("TextButton")) and btn.Visible then
+                        pcall(function()
+                            -- Try standard events
+                            for _, conn in pairs(getconnections(btn.MouseButton1Click)) do conn:Fire() end
+                            for _, conn in pairs(getconnections(btn.Activated)) do conn:Fire() end
+                            -- Try VirtualInputManager (Simulates real mouse click)
+                            VirtualInputManager:SendMouseButtonEvent(btn.AbsolutePosition.X + 5, btn.AbsolutePosition.Y + 5, 0, true, game, 1)
+                            task.wait(0.05)
+                            VirtualInputManager:SendMouseButtonEvent(btn.AbsolutePosition.X + 5, btn.AbsolutePosition.Y + 5, 0, false, game, 1)
+                        end)
+                    end
+                end
+            end)
         end
     end)
 end
