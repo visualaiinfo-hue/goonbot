@@ -1,23 +1,22 @@
--- GOON SNIPER - NO KEY VERSION
+-- GOON SNIPER - FIXED NO KEY VERSION
 local LogoID = "rbxassetid://0" 
 
 -- [0] INITIALIZATION & SAFETY
 if not game:IsLoaded() then game.Loaded:Wait() end
-task.wait(2) -- Allow executor to stabilize
+task.wait(2) 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TeleportService = game:GetService("TeleportService")
 local Player = Players.LocalPlayer
 
--- Safe GUI Load
 local PlayerGui = Player:WaitForChild("PlayerGui", 10)
 if not PlayerGui then PlayerGui = Player:WaitForChild("PlayerGui") end
 
 local ConfigFile = "goon_config_dev.json"
 local TradeWorldID = 129954712878723 
 
--- [1] PET DATABASE
+-- [1] PET DATABASE (FIXED)
 local PetList = {
     "Koi", "Mimic Octopus", "Peacock", "Raccoon", "Kitsune", "Rainbow Dilophosaurus",
     "French Fry Ferret", "Pancake Mole", "Sushi Bear", "Spaghetti Sloth", "Bagel Bunny",
@@ -70,7 +69,6 @@ local function LoadData()
         getgenv().boothData = liveData
     else
         getgenv().boothData = {Booths = {}, Players = {}}
-        -- Passive Hook (Fallback)
         local l_DataStream2_0 = ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("DataStream2")
         if getgenv().UpdateEvent then getgenv().UpdateEvent:Disconnect() end
         getgenv().UpdateEvent = l_DataStream2_0.OnClientEvent:Connect(function(f, Name, Data)
