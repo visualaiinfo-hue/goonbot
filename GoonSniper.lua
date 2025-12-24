@@ -1,6 +1,6 @@
--- GOON SNIPER - TELEPORT TIMER (v2.1)
+-- GOON SNIPER - SCAN MODE LOGGING (v2.2)
 local LogoID = "rbxassetid://0" 
-local Version = "v2.1"
+local Version = "v2.2"
 
 -- [0] INITIALIZATION
 if not game:IsLoaded() then game.Loaded:Wait() end
@@ -67,8 +67,12 @@ end
 local function LoadData()
     local liveData = GCScan()
     if liveData then
+        -- [LOG] Success Log
+        print("✅ [GOON SNIPER] Data Source: Direct Memory Scan (GC)")
         getgenv().boothData = liveData
     else
+        -- [LOG] Fallback Log
+        print("⚠️ [GOON SNIPER] Data Source: Fallback Listener (DataStream2)")
         getgenv().boothData = {Booths = {}, Players = {}}
         local l_DataStream2_0 = ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("DataStream2")
         if getgenv().UpdateEvent then getgenv().UpdateEvent:Disconnect() end
