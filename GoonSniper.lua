@@ -1,6 +1,6 @@
--- GOON SNIPER - DEACTIVATION FIX (v2.0)
+-- GOON SNIPER - TELEPORT TIMER (v2.1)
 local LogoID = "rbxassetid://0" 
-local Version = "v2.0"
+local Version = "v2.1"
 
 -- [0] INITIALIZATION
 if not game:IsLoaded() then game.Loaded:Wait() end
@@ -109,7 +109,7 @@ local function Hop()
     if not success then TeleportService:Teleport(TradeWorldID, Player) end
 end
 
--- [5] MAIN LOOP (FIXED)
+-- [5] MAIN LOOP
 local function MainLoop()
     local DataService 
     pcall(function() DataService = require(ReplicatedStorage.Modules.DataService) end)
@@ -120,7 +120,6 @@ local function MainLoop()
     if not Data or not Data.Booths then return end 
 
     for BoothId, BoothData in pairs(Data.Booths) do
-        -- [FIX] Stop scanning immediately if disabled
         if not getgenv().SniperEnabled then break end
 
         local Owner = BoothData.Owner
@@ -131,7 +130,6 @@ local function MainLoop()
             end
             
             for ListingId, ListingData in pairs(Data.Players[Owner].Listings) do
-                -- [FIX] Double check loop status before processing next item
                 if not getgenv().SniperEnabled then break end
 
                 if ListingData.ItemType == "Pet" then
@@ -155,7 +153,6 @@ local function MainLoop()
                             
                             if MaxWeight >= MinW and Price <= MaxP and realPlayer ~= Player then
                                 if Price <= MyTokens then
-                                    -- [FIX] Final check before buying to prevent "late" buys
                                     if getgenv().SniperEnabled then
                                         local X,Y = ReplicatedStorage.GameEvents.TradeEvents.Booths.BuyListing:InvokeServer(realPlayer, ListingId)
                                         if X then
@@ -379,9 +376,27 @@ local function LoadSniperUI()
             task.wait()
             if getgenv().SniperEnabled then
                 if game.PlaceId ~= TradeWorldID then
-                    StatusLbl.Text = "WRONG WORLD! HOPPING..."
-                    TeleportService:Teleport(TradeWorldID, Player)
-                    task.wait(10)
+                    -- [FIX] 60-Second Countdown Logic
+                    StatusLbl.TextColor3 = Color3.fromRGB(255, 200, 50) -- Orange warning color
+                    local Aborted = false
+                    
+                    for i = 60, 1, -1 do
+                        if not getgenv().SniperEnabled then 
+                            Aborted = true
+                            break 
+                        end
+                        StatusLbl.Text = "TELEPORTING IN " .. i .. "s..."
+                        task.wait(1)
+                    end
+
+                    if not Aborted and getgenv().SniperEnabled then
+                        StatusLbl.Text = "TELEPORTING..."
+                        TeleportService:Teleport(TradeWorldID, Player)
+                        task.wait(10) -- Prevent double teleport attempts
+                    elseif Aborted then
+                        StatusLbl.Text = "STATUS: IDLE"
+                        StatusLbl.TextColor3 = Color3.fromRGB(150,150,150)
+                    end
                 else
                     pcall(MainLoop)
                     if tick() - getgenv().LastFound > 60 then
