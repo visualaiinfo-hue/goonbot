@@ -3,7 +3,7 @@ local LogoID = "rbxassetid://0" -- REPLACE 0 WITH YOUR IMAGE ID
 
 -- [1] CONFIGURATION: YOUR GITHUB LINK
 -- PASTE THE "RAW" GIST LINK YOU COPIED IN STEP 2 HERE:
-local KeyURL = "https://gist.githubusercontent.com/EXAMPLE/RAW/KEYS.TXT" 
+local KeyURL = "https://gist.githubusercontent.com/visualaiinfo-hue/5a1b8a1d32a3e9360a7d3d26cd75123e/raw/33ddec06a596d0292d6cd15414a4dadb0c595862/gistfile1.txt" 
 
 -- [2] KEY SYSTEM LOGIC
 local Players = game:GetService("Players")
