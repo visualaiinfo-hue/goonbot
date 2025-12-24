@@ -223,7 +223,7 @@ local function LoadSniperUI()
     DropdownBtn.Size = UDim2.new(1, -30, 0, 30)
     DropdownBtn.Position = UDim2.new(0, 15, 0, 65)
     DropdownBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
-    DropdownBtn.TextColor3 = Color3.fromRGB(255,255,255)
+    DropdownBtn.TextColor3 = Color3.fromRGB(200,200,200)
     DropdownBtn.Font = Enum.Font.GothamBold
     Instance.new("UICorner", DropdownBtn).CornerRadius = UDim.new(0,6)
 
