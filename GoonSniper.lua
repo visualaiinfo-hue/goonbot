@@ -1,6 +1,6 @@
--- GOON SNIPER - SCAN MODE LOGGING (v2.2)
+-- GOON SNIPER - UPDATED PET LIST (v2.3)
 local LogoID = "rbxassetid://0" 
-local Version = "v2.2"
+local Version = "v2.3"
 
 -- [0] INITIALIZATION
 if not game:IsLoaded() then game.Loaded:Wait() end
@@ -17,13 +17,41 @@ if not PlayerGui then PlayerGui = Player:WaitForChild("PlayerGui") end
 local ConfigFile = "goon_config_dev.json"
 local TradeWorldID = 129954712878723 
 
--- [1] PET DATABASE
+-- [1] PET DATABASE (EXPANDED)
 local PetList = {
-    "Koi", "Mimic Octopus", "Peacock", "Raccoon", "Kitsune", "Rainbow Dilophosaurus",
-    "French Fry Ferret", "Pancake Mole", "Sushi Bear", "Spaghetti Sloth", "Bagel Bunny",
-    "Frog", "Mole", "Echo Frog", "Shiba Inu", "Nihonzaru", "Tanuki", "Tanchozuru", "Kappa",
-    "Ostrich", "Capybara", "Scarlet Macaw", "Wasp", "Tarantula Hawk", "Moth", "Butterfly",
-    "Disco Bee", "Bee", "Honey Bee", "Bear Bee", "Petal Bee", "Queen Bee"
+    "Amethyst Beetle", "Ankylosaurus", "Archling", "Arctic Fox", "Asteris", "Axolotl", 
+    "Bacon Pig", "Badger", "Bagel Bunny", "Bald Eagle", "Barn Owl", "Bat", "Bear Bee", 
+    "Bearded Dragon", "Bee", "Black Bunny", "Blood Hedgehog", "Blood Kiwi", "Blood Owl", 
+    "Blue Jay", "Bone Dog", "Brontosaurus", "Brown Mouse", "Bunny", "Butterfly", "Camel", 
+    "Cape Buffalo", "Capybara", "Cardinal", "Cat", "Caterpillar", "Chicken", "Chicken Zombie", 
+    "Chimpanzee", "Chipmunk", "Christmas Gorilla", "Chubby Chipmunk", "Cockatrice", 
+    "Cocoa Cat", "Cooked Owl", "Corrupted Kitsune", "Corrupted Kodama", "Cow", "Crab", 
+    "Crocodile", "Crow", "Dairy Cow", "Dark Spriggan", "Deer", "Diamond Panther", 
+    "Dilophosaurus", "Disco Bee", "Dog", "Dragonfly", "Echo Frog", "Eggnog Chick", "Elk", 
+    "Emerald Snake", "Faestar", "Farmer Chipmunk", "Fennec Fox", "Flamingo", "Football", 
+    "Fortune Squirrel", "French Fry Ferret", "French Hen", "Frog", "Frost Dragon", 
+    "Frost Squirrel", "Gecko", "Ghost Bear", "Giant Ant", "Gift Rat", "Giraffe", "Gnome", 
+    "Goat", "Goblin", "Golden Goose", "Golden Lab", "Gorilla Chef", "Grey Mouse", "Griffin", 
+    "Grizzly Bear", "Hamster", "Hedgehog", "Hex Serpent", "Hippo", "Honey Bee", 
+    "Hotdog Daschund", "Hummingbird", "Hyacinth Macaw", "Hyena", "Hyrax", "Idol Chipmunk", 
+    "Iguana", "Iguanodon", "Imp", "Jackalope", "Kappa", "Kitsune", "Kiwi", "Kodama", "Koi", 
+    "Krampus", "Ladybug", "Lemon Lion", "Lich", "Lion", "Mallard", "Mandrake", "Maneki-neko", 
+    "Marmot", "Meerkat", "Mimic Octopus", "Mistletoad", "Mizuchi", "Mole", "Monkey", 
+    "Moon Cat", "Moth", "Mummy", "Night Owl", "Nihonzaru", "Nutcracker", "Orange Tabby", 
+    "Orangutan", "Ostrich", "Owl", "Oxpecker", "Pachycephalosaurus", "Pack Bee", 
+    "Pancake Mole", "Panda", "Parasaurolophus", "Peacock", "Penguin", "Petal Bee", "Pig", 
+    "Pixie", "Polar Bear", "Praying Mantis", "Pterodactyl", "Pumpkin Rat", "Queen Bee", 
+    "Raccoon", "Raiju", "Rainbow Dilophosaurus", "Rake", "Raptor", "Reaper", "Red Fox", 
+    "Red Giant Ant", "Red Panda", "Red-Nosed Reindeer", "Rhino", "Robin", "Rooster", 
+    "Ruby Squid", "Salmon", "Sand Snake", "Sapphire Macaw", "Scarab", "Scarlet Macaw", 
+    "Sea Otter", "Sea Turtle", "Seagull", "Seal", "Seedling", "Shiba Inu", "Shroomie", 
+    "Silver Dragonfly", "Silver Monkey", "Snail", "Snow Bunny", "Snowman Builder", 
+    "Snowman Soldier", "Space Squirrel", "Spaghetti Sloth", "Specter", "Spider", 
+    "Spinosaurus", "Spotted Deer", "Spriggan", "Squirrel", "Starfish", "Stegosaurus", 
+    "Sugar Glider", "Summer Kiwi", "Suncoil", "Sunny-Side Chicken", "Sushi Bear", "Swan", 
+    "T-Rex", "Tanchozuru", "Tanuki", "Tarantula Hawk", "Tiger", "Tomb Marmot", "Topaz Snail", 
+    "Toucan", "Tree Frog", "Triceratops", "Tsuchinoko", "Turtle", "Wasp", "Water Buffalo", 
+    "Wendigo", "Wisp", "Wolf", "Woodpecker", "Woody", "Yeti", "Zebra"
 }
 table.sort(PetList)
 
