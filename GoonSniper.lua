@@ -1,6 +1,6 @@
--- GOON SNIPER - CENTER CLICK LOADING FIX (v2.7)
+-- GOON SNIPER - CIRCLE MINIMIZE (v3.3)
 local LogoID = "rbxassetid://0" 
-local Version = "v2.7"
+local Version = "v2.8"
 
 -- [0] INITIALIZATION
 if not game:IsLoaded() then game.Loaded:Wait() end
@@ -18,7 +18,7 @@ if not PlayerGui then PlayerGui = Player:WaitForChild("PlayerGui") end
 local ConfigFile = "goon_config_dev.json"
 local TradeWorldID = 129954712878723 
 
--- [1] PET DATABASE (FULLY UPDATED)
+-- [1] PET DATABASE
 local PetList = {
     "Amethyst Beetle", "Ankylosaurus", "Apple Gazelle", "Archling", "Arctic Fox", "Asteris", "Axolotl", 
     "Bacon Pig", "Badger", "Bagel Bunny", "Bald Eagle", "Barn Owl", "Bat", "Bear Bee", 
@@ -107,11 +107,9 @@ end
 local function LoadData()
     local liveData = GCScan()
     if liveData then
-        -- [LOG] Success Log
         print("✅ [GOON SNIPER] Data Source: Direct Memory Scan (GC)")
         getgenv().boothData = liveData
     else
-        -- [LOG] Fallback Log
         print("⚠️ [GOON SNIPER] Data Source: Fallback Listener (DataStream2)")
         getgenv().boothData = {Booths = {}, Players = {}}
         local l_DataStream2_0 = ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("DataStream2")
@@ -222,14 +220,38 @@ local function LoadSniperUI()
     ScreenGui.Parent = PlayerGui
     getgenv().GoonGUI = ScreenGui
 
+    -- Colors
+    local NeonGreen = Color3.fromRGB(0, 255, 127)
+    local NeonRed = Color3.fromRGB(255, 50, 50)
+    local DarkBg = Color3.fromRGB(15, 15, 15)
+    local ButtonBg = Color3.fromRGB(20, 20, 20)
+
+    -- [NEW] CIRCULAR OPEN BUTTON (Hidden by default)
+    local OpenBtn = Instance.new("TextButton")
+    OpenBtn.Name = "OpenButton"
+    OpenBtn.Parent = ScreenGui
+    OpenBtn.BackgroundColor3 = DarkBg
+    OpenBtn.Position = UDim2.new(0.05, 0, 0.15, 0)
+    OpenBtn.Size = UDim2.new(0, 50, 0, 50)
+    OpenBtn.Text = "G"
+    OpenBtn.TextColor3 = NeonGreen
+    OpenBtn.Font = Enum.Font.GothamBlack
+    OpenBtn.TextSize = 32
+    OpenBtn.Visible = false -- Hidden initially
+    OpenBtn.Active = true; OpenBtn.Draggable = true
+    Instance.new("UICorner", OpenBtn).CornerRadius = UDim.new(1, 0) -- Make it a circle
+    local OpenStroke = Instance.new("UIStroke"); OpenStroke.Parent = OpenBtn; OpenStroke.Color = NeonGreen; OpenStroke.Thickness = 2; OpenStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
+    -- MAIN FRAME
     local MainFrame = Instance.new("Frame")
     MainFrame.Parent = ScreenGui
-    MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+    MainFrame.BackgroundColor3 = DarkBg
     MainFrame.Position = UDim2.new(0.05, 0, 0.15, 0)
-    MainFrame.Size = UDim2.new(0, 260, 0, 420)
+    MainFrame.Size = UDim2.new(0, 450, 0, 400)
     MainFrame.Active = true; MainFrame.Draggable = true
-    MainFrame.ClipsDescendants = true -- [FIX] Hides contents when minimized
+    MainFrame.ClipsDescendants = true 
     Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 8)
+    local MainStroke = Instance.new("UIStroke"); MainStroke.Parent = MainFrame; MainStroke.Color = NeonGreen; MainStroke.Thickness = 2.5; MainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
     local Title = Instance.new("TextLabel")
     Title.Parent = MainFrame
@@ -253,6 +275,7 @@ local function LoadSniperUI()
     VerLabel.TextSize = 12
     VerLabel.TextXAlignment = Enum.TextXAlignment.Right
 
+    -- [UPDATED] MINIMIZE BUTTON LOGIC
     local MinBtn = Instance.new("TextButton")
     MinBtn.Parent = MainFrame
     MinBtn.Text = "-"
@@ -262,11 +285,18 @@ local function LoadSniperUI()
     MinBtn.Font = Enum.Font.GothamBold
     MinBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
     MinBtn.TextSize = 20
-    local Minimized = false
+    
     MinBtn.MouseButton1Click:Connect(function()
-        Minimized = not Minimized
-        if Minimized then MainFrame:TweenSize(UDim2.new(0, 260, 0, 50), "Out", "Quad", 0.3, true); MinBtn.Text = "+"
-        else MainFrame:TweenSize(UDim2.new(0, 260, 0, 420), "Out", "Quad", 0.3, true); MinBtn.Text = "-" end
+        MainFrame.Visible = false
+        OpenBtn.Visible = true
+        OpenBtn.Position = MainFrame.Position -- Sync position
+    end)
+
+    -- [NEW] OPEN BUTTON LOGIC
+    OpenBtn.MouseButton1Click:Connect(function()
+        OpenBtn.Visible = false
+        MainFrame.Visible = true
+        MainFrame.Position = OpenBtn.Position -- Sync position
     end)
 
     local StatusLbl = Instance.new("TextLabel")
@@ -283,11 +313,12 @@ local function LoadSniperUI()
     local DropdownBtn = Instance.new("TextButton")
     DropdownBtn.Parent = MainFrame
     DropdownBtn.Text = "Select Pet >"
-    DropdownBtn.Size = UDim2.new(1, -30, 0, 30)
+    DropdownBtn.Size = UDim2.new(1, -30, 0, 35)
     DropdownBtn.Position = UDim2.new(0, 15, 0, 65)
     DropdownBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
     DropdownBtn.TextColor3 = Color3.fromRGB(200,200,200)
     DropdownBtn.Font = Enum.Font.GothamBold
+    DropdownBtn.TextSize = 16 
     Instance.new("UICorner", DropdownBtn).CornerRadius = UDim.new(0,6)
 
     local DropdownFrame = Instance.new("ScrollingFrame")
@@ -297,7 +328,7 @@ local function LoadSniperUI()
     DropdownFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) 
     DropdownFrame.Visible = false
     DropdownFrame.ZIndex = 10 
-    DropdownFrame.CanvasSize = UDim2.new(0, 0, 0, #PetList * 30)
+    DropdownFrame.CanvasSize = UDim2.new(0, 0, 0, #PetList * 35) 
     DropdownFrame.ScrollBarThickness = 6
     Instance.new("UICorner", DropdownFrame).CornerRadius = UDim.new(0,6)
     
@@ -307,35 +338,40 @@ local function LoadSniperUI()
 
     local WeightBox = Instance.new("TextBox")
     WeightBox.Parent = MainFrame
+    WeightBox.Text = "" 
     WeightBox.PlaceholderText = "Min Weight"
-    WeightBox.Size = UDim2.new(0.45, 0, 0, 30)
-    WeightBox.Position = UDim2.new(0, 15, 0, 105)
+    WeightBox.Size = UDim2.new(0.45, 0, 0, 35)
+    WeightBox.Position = UDim2.new(0, 15, 0, 110)
     WeightBox.BackgroundColor3 = Color3.fromRGB(30,30,30)
     WeightBox.TextColor3 = Color3.fromRGB(255,255,255)
+    WeightBox.TextSize = 14
     Instance.new("UICorner", WeightBox).CornerRadius = UDim.new(0,6)
 
     local PriceBox = Instance.new("TextBox")
     PriceBox.Parent = MainFrame
+    PriceBox.Text = "" 
     PriceBox.PlaceholderText = "Max Price"
-    PriceBox.Size = UDim2.new(0.45, 0, 0, 30)
-    PriceBox.Position = UDim2.new(0.55, -5, 0, 105)
+    PriceBox.Size = UDim2.new(0.45, 0, 0, 35)
+    PriceBox.Position = UDim2.new(0.55, -5, 0, 110)
     PriceBox.BackgroundColor3 = Color3.fromRGB(30,30,30)
     PriceBox.TextColor3 = Color3.fromRGB(255,255,255)
+    PriceBox.TextSize = 14
     Instance.new("UICorner", PriceBox).CornerRadius = UDim.new(0,6)
 
     local AddBtn = Instance.new("TextButton")
     AddBtn.Parent = MainFrame
     AddBtn.Text = "ADD TARGET"
-    AddBtn.Size = UDim2.new(1, -30, 0, 30)
-    AddBtn.Position = UDim2.new(0, 15, 0, 145)
+    AddBtn.Size = UDim2.new(1, -30, 0, 35)
+    AddBtn.Position = UDim2.new(0, 15, 0, 155)
     AddBtn.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
     AddBtn.Font = Enum.Font.GothamBold
+    AddBtn.TextSize = 16
     Instance.new("UICorner", AddBtn).CornerRadius = UDim.new(0,6)
 
     local TargetList = Instance.new("ScrollingFrame")
     TargetList.Parent = MainFrame
     TargetList.Size = UDim2.new(1, -30, 0, 100)
-    TargetList.Position = UDim2.new(0, 15, 0, 190)
+    TargetList.Position = UDim2.new(0, 15, 0, 200)
     TargetList.BackgroundColor3 = Color3.fromRGB(20,20,20)
     TargetList.AutomaticCanvasSize = Enum.AutomaticSize.Y
     TargetList.ScrollBarThickness = 6
@@ -350,7 +386,7 @@ local function LoadSniperUI()
     ToggleBtn.Parent = MainFrame
     ToggleBtn.Text = "ACTIVATE SNIPER"
     ToggleBtn.Size = UDim2.new(1, -30, 0, 40)
-    ToggleBtn.Position = UDim2.new(0, 15, 0, 305)
+    ToggleBtn.Position = UDim2.new(0, 15, 0, 310)
     ToggleBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
     ToggleBtn.TextColor3 = Color3.fromRGB(50,255,100)
     ToggleBtn.Font = Enum.Font.GothamBold
@@ -361,7 +397,7 @@ local function LoadSniperUI()
     HopBtn.Parent = MainFrame
     HopBtn.Text = "FORCE HOP"
     HopBtn.Size = UDim2.new(1, -30, 0, 25)
-    HopBtn.Position = UDim2.new(0, 15, 0, 355)
+    HopBtn.Position = UDim2.new(0, 15, 0, 360)
     HopBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
     HopBtn.TextColor3 = Color3.fromRGB(255,255,255)
     HopBtn.Font = Enum.Font.GothamBold
@@ -373,8 +409,17 @@ local function LoadSniperUI()
     local function RefreshList()
         for _,v in pairs(TargetList:GetChildren()) do if v:IsA("Frame") then v:Destroy() end end
         for pet, cfg in pairs(getgenv().CurrentFilters) do
-            local Row = Instance.new("Frame"); Row.Parent = TargetList; Row.Size = UDim2.new(1,0,0,25); Row.BackgroundTransparency = 1
-            local Lbl = Instance.new("TextLabel"); Lbl.Parent = Row; Lbl.Text = pet.." ("..cfg[1].."kg / $"..cfg[2]..")"; Lbl.Size = UDim2.new(0.8,0,1,0); Lbl.TextColor3 = Color3.fromRGB(200,200,200); Lbl.BackgroundTransparency = 1; Lbl.Font = Enum.Font.Gotham; Lbl.TextSize = 11; Lbl.TextXAlignment = Enum.TextXAlignment.Left; Lbl.Position = UDim2.new(0,5,0,0)
+            local Row = Instance.new("Frame"); Row.Parent = TargetList; Row.Size = UDim2.new(1,0,0,35); Row.BackgroundTransparency = 1
+            local Lbl = Instance.new("TextLabel"); Lbl.Parent = Row; 
+            Lbl.Text = pet.." ("..cfg[1].."kg / $"..cfg[2]..")"; 
+            Lbl.Size = UDim2.new(0.8,0,1,0); 
+            Lbl.TextColor3 = Color3.fromRGB(200,200,200); 
+            Lbl.BackgroundTransparency = 1; 
+            Lbl.Font = Enum.Font.Gotham; 
+            Lbl.TextSize = 16; 
+            Lbl.TextXAlignment = Enum.TextXAlignment.Left; 
+            Lbl.Position = UDim2.new(0,5,0,0)
+            
             local Del = Instance.new("TextButton"); Del.Parent = Row; Del.Text = "X"; Del.Size = UDim2.new(0.2,0,1,0); Del.Position = UDim2.new(0.8,0,0,0); Del.TextColor3 = Color3.fromRGB(255,50,50); Del.BackgroundTransparency = 1; Del.Font = Enum.Font.GothamBold
             Del.MouseButton1Click:Connect(function() getgenv().CurrentFilters[pet] = nil; RefreshList(); SaveConfig() end)
         end
@@ -383,11 +428,12 @@ local function LoadSniperUI()
     for _,p in ipairs(PetList) do
         local b = Instance.new("TextButton"); 
         b.Parent = DropdownFrame; 
-        b.Size = UDim2.new(1,0,0,30); 
+        b.Size = UDim2.new(1,0,0,35); 
         b.Text = p; 
         b.BackgroundColor3 = Color3.fromRGB(25,25,25); 
         b.TextColor3 = Color3.fromRGB(255,255,255) 
         b.Font = Enum.Font.Gotham
+        b.TextSize = 16 
         b.ZIndex = 11 
         b.MouseButton1Click:Connect(function() SelectedPet = p; DropdownBtn.Text = p; DropdownFrame.Visible = false end)
     end
@@ -421,26 +467,19 @@ local function LoadSniperUI()
             task.wait()
             if getgenv().SniperEnabled then
                 if game.PlaceId ~= TradeWorldID then
-                    -- [FIX] 60-Second Countdown Logic
                     StatusLbl.TextColor3 = Color3.fromRGB(255, 200, 50) -- Orange warning color
                     local Aborted = false
-                    
                     for i = 60, 1, -1 do
-                        if not getgenv().SniperEnabled then 
-                            Aborted = true
-                            break 
-                        end
+                        if not getgenv().SniperEnabled then Aborted = true; break end
                         StatusLbl.Text = "TELEPORTING IN " .. i .. "s..."
                         task.wait(1)
                     end
-
                     if not Aborted and getgenv().SniperEnabled then
                         StatusLbl.Text = "TELEPORTING..."
                         TeleportService:Teleport(TradeWorldID, Player)
-                        task.wait(10) -- Prevent double teleport attempts
+                        task.wait(10) 
                     elseif Aborted then
-                        StatusLbl.Text = "STATUS: IDLE"
-                        StatusLbl.TextColor3 = Color3.fromRGB(150,150,150)
+                        StatusLbl.Text = "STATUS: IDLE"; StatusLbl.TextColor3 = Color3.fromRGB(150,150,150)
                     end
                 else
                     pcall(MainLoop)
@@ -454,34 +493,25 @@ local function LoadSniperUI()
         end
     end)
     
-    -- [NEW] AUTO CLOSE LOADING SCREEN LOGIC (Center Click)
+    -- Auto Close Loading
     task.spawn(function()
         while true do
             task.wait(1)
             pcall(function()
                 local PGui = Player:WaitForChild("PlayerGui", 5)
                 if not PGui then return end
-                
                 local FoundLoading = false
-                
-                -- Check for loading screen
                 for _, g in pairs(PGui:GetChildren()) do
                     if g:IsA("ScreenGui") and g.Enabled then
                         local name = g.Name:lower()
-                        if name:find("loading") or name:find("intro") then
-                            FoundLoading = true
-                        end
+                        if name:find("loading") or name:find("intro") then FoundLoading = true end
                     end
                 end
-
-                -- If found, click the absolute center of the screen
                 if FoundLoading then
                     local Viewport = workspace.CurrentCamera.ViewportSize
-                    local CenterX, CenterY = Viewport.X / 2, Viewport.Y / 2
-                    
-                    VirtualInputManager:SendMouseButtonEvent(CenterX, CenterY, 0, true, game, 1)
+                    VirtualInputManager:SendMouseButtonEvent(Viewport.X/2, Viewport.Y/2, 0, true, game, 1)
                     task.wait(0.05)
-                    VirtualInputManager:SendMouseButtonEvent(CenterX, CenterY, 0, false, game, 1)
+                    VirtualInputManager:SendMouseButtonEvent(Viewport.X/2, Viewport.Y/2, 0, false, game, 1)
                 end
             end)
         end
