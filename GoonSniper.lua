@@ -1,6 +1,6 @@
--- GOON SNIPER - WEIGHT LOG FIX (v1.9)
+-- GOON SNIPER - DEACTIVATION FIX (v2.0)
 local LogoID = "rbxassetid://0" 
-local Version = "v1.9"
+local Version = "v2.0"
 
 -- [0] INITIALIZATION
 if not game:IsLoaded() then game.Loaded:Wait() end
@@ -109,7 +109,7 @@ local function Hop()
     if not success then TeleportService:Teleport(TradeWorldID, Player) end
 end
 
--- [5] MAIN LOOP (Updated with Weight Logging)
+-- [5] MAIN LOOP (FIXED)
 local function MainLoop()
     local DataService 
     pcall(function() DataService = require(ReplicatedStorage.Modules.DataService) end)
@@ -120,6 +120,9 @@ local function MainLoop()
     if not Data or not Data.Booths then return end 
 
     for BoothId, BoothData in pairs(Data.Booths) do
+        -- [FIX] Stop scanning immediately if disabled
+        if not getgenv().SniperEnabled then break end
+
         local Owner = BoothData.Owner
         if Owner and Data.Players[Owner] and Data.Players[Owner].Listings then
             local realPlayer = nil
@@ -128,6 +131,9 @@ local function MainLoop()
             end
             
             for ListingId, ListingData in pairs(Data.Players[Owner].Listings) do
+                -- [FIX] Double check loop status before processing next item
+                if not getgenv().SniperEnabled then break end
+
                 if ListingData.ItemType == "Pet" then
                     local ItemData = Data.Players[Owner].Items[ListingData.ItemId]
                     if ItemData then
@@ -143,17 +149,19 @@ local function MainLoop()
                             local MaxP = Settings[2] or 9999999
                             
                             if not SeenListings[ListingId] then
-                                -- [FIX] Added Weight to the print statement
                                 print("🔎 FOUND:", Type, "| Price:", Price, "| Weight:", math.floor(MaxWeight).."kg")
                                 SeenListings[ListingId] = true
                             end
                             
                             if MaxWeight >= MinW and Price <= MaxP and realPlayer ~= Player then
                                 if Price <= MyTokens then
-                                    local X,Y = ReplicatedStorage.GameEvents.TradeEvents.Booths.BuyListing:InvokeServer(realPlayer, ListingId)
-                                    if X then
-                                        Sniped(Type, MaxWeight, Price)
-                                        task.wait(5)
+                                    -- [FIX] Final check before buying to prevent "late" buys
+                                    if getgenv().SniperEnabled then
+                                        local X,Y = ReplicatedStorage.GameEvents.TradeEvents.Booths.BuyListing:InvokeServer(realPlayer, ListingId)
+                                        if X then
+                                            Sniped(Type, MaxWeight, Price)
+                                            task.wait(5)
+                                        end
                                     end
                                 end
                             end
