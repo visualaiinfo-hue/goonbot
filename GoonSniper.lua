@@ -1,7 +1,7 @@
--- GOON SNIPER - FIXED NO KEY VERSION
+-- GOON SNIPER - WHITE TEXT FIX
 local LogoID = "rbxassetid://0" 
 
--- [0] INITIALIZATION & SAFETY
+-- [0] INITIALIZATION
 if not game:IsLoaded() then game.Loaded:Wait() end
 task.wait(2) 
 local Players = game:GetService("Players")
@@ -16,7 +16,7 @@ if not PlayerGui then PlayerGui = Player:WaitForChild("PlayerGui") end
 local ConfigFile = "goon_config_dev.json"
 local TradeWorldID = 129954712878723 
 
--- [1] PET DATABASE (FIXED)
+-- [1] PET DATABASE
 local PetList = {
     "Koi", "Mimic Octopus", "Peacock", "Raccoon", "Kitsune", "Rainbow Dilophosaurus",
     "French Fry Ferret", "Pancake Mole", "Sushi Bear", "Spaghetti Sloth", "Bagel Bunny",
@@ -32,7 +32,7 @@ getgenv().CurrentFilters = {}
 getgenv().LastFound = tick()
 local SeenListings = {}
 
--- [3] CONFIGURATION HANDLERS
+-- [3] CONFIGURATION
 local function SaveConfig()
     if writefile then
         local data = { Enabled = getgenv().SniperEnabled, Filters = getgenv().CurrentFilters }
@@ -108,7 +108,7 @@ local function Hop()
     if not success then TeleportService:Teleport(TradeWorldID, Player) end
 end
 
--- [5] MAIN LOOP LOGIC
+-- [5] MAIN LOOP
 local function MainLoop()
     local DataService 
     pcall(function() DataService = require(ReplicatedStorage.Modules.DataService) end)
@@ -223,7 +223,7 @@ local function LoadSniperUI()
     DropdownBtn.Size = UDim2.new(1, -30, 0, 30)
     DropdownBtn.Position = UDim2.new(0, 15, 0, 65)
     DropdownBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
-    DropdownBtn.TextColor3 = Color3.fromRGB(200,200,200)
+    DropdownBtn.TextColor3 = Color3.fromRGB(255,255,255)
     DropdownBtn.Font = Enum.Font.GothamBold
     Instance.new("UICorner", DropdownBtn).CornerRadius = UDim.new(0,6)
 
@@ -307,7 +307,12 @@ local function LoadSniperUI()
     end
 
     for _,p in ipairs(PetList) do
-        local b = Instance.new("TextButton"); b.Parent = DropdownFrame; b.Size = UDim2.new(1,0,0,30); b.Text = p; b.BackgroundColor3 = Color3.fromRGB(30,30,30); b.TextColor3 = Color3.fromRGB(200,200,200)
+        local b = Instance.new("TextButton"); 
+        b.Parent = DropdownFrame; 
+        b.Size = UDim2.new(1,0,0,30); 
+        b.Text = p; 
+        b.BackgroundColor3 = Color3.fromRGB(30,30,30); 
+        b.TextColor3 = Color3.fromRGB(255,255,255) -- [FIX] Set to PURE WHITE
         b.MouseButton1Click:Connect(function() SelectedPet = p; DropdownBtn.Text = p; DropdownFrame.Visible = false end)
     end
 
