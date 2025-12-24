@@ -1,6 +1,6 @@
--- GOON SNIPER - DROPDOWN VISIBILITY FIX (v1.6)
+-- GOON SNIPER - WEIGHT LOG FIX (v1.9)
 local LogoID = "rbxassetid://0" 
-local Version = "v1.6"
+local Version = "v1.9"
 
 -- [0] INITIALIZATION
 if not game:IsLoaded() then game.Loaded:Wait() end
@@ -109,7 +109,7 @@ local function Hop()
     if not success then TeleportService:Teleport(TradeWorldID, Player) end
 end
 
--- [5] MAIN LOOP
+-- [5] MAIN LOOP (Updated with Weight Logging)
 local function MainLoop()
     local DataService 
     pcall(function() DataService = require(ReplicatedStorage.Modules.DataService) end)
@@ -143,7 +143,8 @@ local function MainLoop()
                             local MaxP = Settings[2] or 9999999
                             
                             if not SeenListings[ListingId] then
-                                print("🔎 FOUND:", Type, "| Price:", Price)
+                                -- [FIX] Added Weight to the print statement
+                                print("🔎 FOUND:", Type, "| Price:", Price, "| Weight:", math.floor(MaxWeight).."kg")
                                 SeenListings[ListingId] = true
                             end
                             
@@ -180,7 +181,6 @@ local function LoadSniperUI()
     MainFrame.Active = true; MainFrame.Draggable = true
     Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 8)
 
-    -- Header
     local Title = Instance.new("TextLabel")
     Title.Parent = MainFrame
     Title.Text = "GOON SNIPER"
@@ -240,15 +240,14 @@ local function LoadSniperUI()
     DropdownBtn.Font = Enum.Font.GothamBold
     Instance.new("UICorner", DropdownBtn).CornerRadius = UDim.new(0,6)
 
-    -- [FIX] INCREASED ZINDEX SO IT FLOATS OVER INPUTS
     local DropdownFrame = Instance.new("ScrollingFrame")
     DropdownFrame.Parent = MainFrame
     DropdownFrame.Size = UDim2.new(1, -30, 0, 150)
     DropdownFrame.Position = UDim2.new(0, 15, 0, 100)
-    DropdownFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) -- Slightly darker for contrast
+    DropdownFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) 
     DropdownFrame.Visible = false
-    DropdownFrame.ZIndex = 10 -- CRITICAL FIX: Higher than TextBoxes (ZIndex 1)
-    DropdownFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y -- CRITICAL FIX: Ensures it scrolls
+    DropdownFrame.ZIndex = 10 
+    DropdownFrame.CanvasSize = UDim2.new(0, 0, 0, #PetList * 30)
     DropdownFrame.ScrollBarThickness = 6
     Instance.new("UICorner", DropdownFrame).CornerRadius = UDim.new(0,6)
     
@@ -288,8 +287,14 @@ local function LoadSniperUI()
     TargetList.Size = UDim2.new(1, -30, 0, 100)
     TargetList.Position = UDim2.new(0, 15, 0, 190)
     TargetList.BackgroundColor3 = Color3.fromRGB(20,20,20)
+    TargetList.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    TargetList.ScrollBarThickness = 6
     Instance.new("UICorner", TargetList).CornerRadius = UDim.new(0,4)
-    local TargetLayout = Instance.new("UIListLayout"); TargetLayout.Parent = TargetList
+    
+    local TargetLayout = Instance.new("UIListLayout"); 
+    TargetLayout.Parent = TargetList
+    TargetLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    TargetLayout.Padding = UDim.new(0, 2)
 
     local ToggleBtn = Instance.new("TextButton")
     ToggleBtn.Parent = MainFrame
@@ -331,9 +336,9 @@ local function LoadSniperUI()
         b.Size = UDim2.new(1,0,0,30); 
         b.Text = p; 
         b.BackgroundColor3 = Color3.fromRGB(25,25,25); 
-        b.TextColor3 = Color3.fromRGB(255,255,255) -- Pure White
+        b.TextColor3 = Color3.fromRGB(255,255,255) 
         b.Font = Enum.Font.Gotham
-        b.ZIndex = 11 -- [FIX] Sit on top of the ZIndex 10 frame
+        b.ZIndex = 11 
         b.MouseButton1Click:Connect(function() SelectedPet = p; DropdownBtn.Text = p; DropdownFrame.Visible = false end)
     end
 
