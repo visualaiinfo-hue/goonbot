@@ -1,6 +1,6 @@
--- GOON SNIPER - UPDATED PET LIST (v2.3)
+-- GOON SNIPER - MINIMIZE FIX (v2.4)
 local LogoID = "rbxassetid://0" 
-local Version = "v2.3"
+local Version = "v2.4"
 
 -- [0] INITIALIZATION
 if not game:IsLoaded() then game.Loaded:Wait() end
@@ -17,7 +17,7 @@ if not PlayerGui then PlayerGui = Player:WaitForChild("PlayerGui") end
 local ConfigFile = "goon_config_dev.json"
 local TradeWorldID = 129954712878723 
 
--- [1] PET DATABASE (EXPANDED)
+-- [1] PET DATABASE
 local PetList = {
     "Amethyst Beetle", "Ankylosaurus", "Archling", "Arctic Fox", "Asteris", "Axolotl", 
     "Bacon Pig", "Badger", "Bagel Bunny", "Bald Eagle", "Barn Owl", "Bat", "Bear Bee", 
@@ -95,11 +95,9 @@ end
 local function LoadData()
     local liveData = GCScan()
     if liveData then
-        -- [LOG] Success Log
         print("✅ [GOON SNIPER] Data Source: Direct Memory Scan (GC)")
         getgenv().boothData = liveData
     else
-        -- [LOG] Fallback Log
         print("⚠️ [GOON SNIPER] Data Source: Fallback Listener (DataStream2)")
         getgenv().boothData = {Booths = {}, Players = {}}
         local l_DataStream2_0 = ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("DataStream2")
@@ -216,6 +214,7 @@ local function LoadSniperUI()
     MainFrame.Position = UDim2.new(0.05, 0, 0.15, 0)
     MainFrame.Size = UDim2.new(0, 260, 0, 420)
     MainFrame.Active = true; MainFrame.Draggable = true
+    MainFrame.ClipsDescendants = true -- [FIX] Hides contents when minimized
     Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 8)
 
     local Title = Instance.new("TextLabel")
