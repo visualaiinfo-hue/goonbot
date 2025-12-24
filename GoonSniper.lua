@@ -1,9 +1,5 @@
--- GOON SNIPER - MASTER DEV VERSION (Live Key Check Fix)
+-- GOON SNIPER - NO KEY VERSION
 local LogoID = "rbxassetid://0" 
-
--- [1] CONFIGURATION: YOUR GITHUB LINK
--- I removed the specific commit hash so this always points to the LATEST version on GitHub
-local KeyURL = "https://gist.githubusercontent.com/visualaiinfo-hue/1ffae80cd603bc3c1d013eb0ab03b479/raw/c439e3a07a71b67dc618291dccf208f38df5f814/gistfile1.txt" 
 
 -- [0] INITIALIZATION & SAFETY
 if not game:IsLoaded() then game.Loaded:Wait() end
@@ -18,7 +14,6 @@ local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui", 10)
 if not PlayerGui then PlayerGui = Player:WaitForChild("PlayerGui") end
 
-local KeyFile = "goon_auth_dev.txt"
 local ConfigFile = "goon_config_dev.json"
 local TradeWorldID = 129954712878723 
 
@@ -56,37 +51,7 @@ local function LoadConfig()
     end
 end
 
--- [4] UPDATED KEY SYSTEM LOGIC (Cache Buster Fix)
-local function CheckKey(inputKey)
-    -- Clean the input
-    inputKey = inputKey:gsub("%s+", "") -- Remove spaces
-    if inputKey == "" then return false end
-    
-    -- Cache Buster: Adds a random number to the URL so it ignores old saved versions
-    local RefreshURL = KeyURL .. "?t=" .. tostring(math.floor(tick()))
-    
-    local success, response = pcall(function()
-        return game:HttpGet(RefreshURL)
-    end)
-    
-    if success then
-        -- Optional: Print response to console for debugging (remove in final)
-        print("DEBUG: GitHub Response ->", response) 
-        
-        -- Check if the key is inside the file
-        if string.find(response, inputKey) then
-            return true
-        else
-            warn("⚠️ Key not found in online list.")
-            return false
-        end
-    else
-        warn("⚠️ Failed to connect to GitHub: " .. tostring(response))
-        return false
-    end
-end
-
--- [5] SNIPER FUNCTIONS
+-- [4] SNIPER FUNCTIONS
 local function GCScan()
     if not getgc then return nil end
     for _, v in pairs(getgc(true)) do
@@ -109,9 +74,7 @@ local function LoadData()
         local l_DataStream2_0 = ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("DataStream2")
         if getgenv().UpdateEvent then getgenv().UpdateEvent:Disconnect() end
         getgenv().UpdateEvent = l_DataStream2_0.OnClientEvent:Connect(function(f, Name, Data)
-            if f=="UpdateData" and Name == "Booths" then 
-                -- Logic to update passive table
-            end
+            if f=="UpdateData" and Name == "Booths" then end
         end)
     end
 end
@@ -147,7 +110,7 @@ local function Hop()
     if not success then TeleportService:Teleport(TradeWorldID, Player) end
 end
 
--- [6] MAIN LOOP LOGIC
+-- [5] MAIN LOOP LOGIC
 local function MainLoop()
     local DataService 
     pcall(function() DataService = require(ReplicatedStorage.Modules.DataService) end)
@@ -175,7 +138,6 @@ local function MainLoop()
                         local Weight = PetData.BaseWeight * 1.1
                         local MaxWeight = Weight * 10
                         
-                        -- CHECK FILTER
                         local Settings = getgenv().CurrentFilters[Type]
                         if Settings then
                             local MinW = Settings[1] or 0
@@ -191,7 +153,7 @@ local function MainLoop()
                                     local X,Y = ReplicatedStorage.GameEvents.TradeEvents.Booths.BuyListing:InvokeServer(realPlayer, ListingId)
                                     if X then
                                         Sniped(Type, MaxWeight, Price)
-                                        task.wait(5) -- 5s Delay
+                                        task.wait(5)
                                     end
                                 end
                             end
@@ -203,7 +165,7 @@ local function MainLoop()
     end
 end
 
--- [7] UI BUILDER
+-- [6] UI BUILDER
 local function LoadSniperUI()
     if getgenv().GoonGUI then getgenv().GoonGUI:Destroy() end
     local ScreenGui = Instance.new("ScreenGui")
@@ -211,7 +173,6 @@ local function LoadSniperUI()
     ScreenGui.Parent = PlayerGui
     getgenv().GoonGUI = ScreenGui
 
-    -- Main Frame
     local MainFrame = Instance.new("Frame")
     MainFrame.Parent = ScreenGui
     MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
@@ -220,7 +181,6 @@ local function LoadSniperUI()
     MainFrame.Active = true; MainFrame.Draggable = true
     Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 8)
 
-    -- Header
     local Title = Instance.new("TextLabel")
     Title.Parent = MainFrame
     Title.Text = "GOON SNIPER DEV"
@@ -232,7 +192,22 @@ local function LoadSniperUI()
     Title.TextXAlignment = Enum.TextXAlignment.Left
     Title.TextSize = 18
 
-    -- Status
+    local MinBtn = Instance.new("TextButton")
+    MinBtn.Parent = MainFrame
+    MinBtn.Text = "-"
+    MinBtn.BackgroundTransparency = 1
+    MinBtn.Position = UDim2.new(1, -30, 0, 10)
+    MinBtn.Size = UDim2.new(0, 30, 0, 30)
+    MinBtn.Font = Enum.Font.GothamBold
+    MinBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+    MinBtn.TextSize = 20
+    local Minimized = false
+    MinBtn.MouseButton1Click:Connect(function()
+        Minimized = not Minimized
+        if Minimized then MainFrame:TweenSize(UDim2.new(0, 260, 0, 50), "Out", "Quad", 0.3, true); MinBtn.Text = "+"
+        else MainFrame:TweenSize(UDim2.new(0, 260, 0, 420), "Out", "Quad", 0.3, true); MinBtn.Text = "-" end
+    end)
+
     local StatusLbl = Instance.new("TextLabel")
     StatusLbl.Parent = MainFrame
     StatusLbl.Text = "STATUS: IDLE"
@@ -244,7 +219,6 @@ local function LoadSniperUI()
     StatusLbl.TextSize = 12
     StatusLbl.TextXAlignment = Enum.TextXAlignment.Left
 
-    -- Dropdown
     local DropdownBtn = Instance.new("TextButton")
     DropdownBtn.Parent = MainFrame
     DropdownBtn.Text = "Select Pet >"
@@ -263,10 +237,8 @@ local function LoadSniperUI()
     DropdownFrame.Visible = false
     DropdownFrame.ZIndex = 5
     Instance.new("UICorner", DropdownFrame).CornerRadius = UDim.new(0,6)
-    local ListLayout = Instance.new("UIListLayout")
-    ListLayout.Parent = DropdownFrame
+    local ListLayout = Instance.new("UIListLayout"); ListLayout.Parent = DropdownFrame
 
-    -- Inputs
     local WeightBox = Instance.new("TextBox")
     WeightBox.Parent = MainFrame
     WeightBox.PlaceholderText = "Min Weight"
@@ -294,17 +266,14 @@ local function LoadSniperUI()
     AddBtn.Font = Enum.Font.GothamBold
     Instance.new("UICorner", AddBtn).CornerRadius = UDim.new(0,6)
 
-    -- List
     local TargetList = Instance.new("ScrollingFrame")
     TargetList.Parent = MainFrame
     TargetList.Size = UDim2.new(1, -30, 0, 100)
     TargetList.Position = UDim2.new(0, 15, 0, 190)
     TargetList.BackgroundColor3 = Color3.fromRGB(20,20,20)
     Instance.new("UICorner", TargetList).CornerRadius = UDim.new(0,4)
-    local TargetLayout = Instance.new("UIListLayout")
-    TargetLayout.Parent = TargetList
+    local TargetLayout = Instance.new("UIListLayout"); TargetLayout.Parent = TargetList
 
-    -- Controls
     local ToggleBtn = Instance.new("TextButton")
     ToggleBtn.Parent = MainFrame
     ToggleBtn.Text = "ACTIVATE SNIPER"
@@ -326,7 +295,7 @@ local function LoadSniperUI()
     HopBtn.Font = Enum.Font.GothamBold
     Instance.new("UICorner", HopBtn).CornerRadius = UDim.new(0,6)
 
-    -- UI Logic
+    -- Logic
     local SelectedPet = nil
     
     local function RefreshList()
@@ -363,13 +332,11 @@ local function LoadSniperUI()
     end)
     HopBtn.MouseButton1Click:Connect(Hop)
 
-    -- Init
     RefreshList()
     if getgenv().SniperEnabled then 
         ToggleBtn.Text = "DEACTIVATE"; ToggleBtn.TextColor3 = Color3.fromRGB(255,50,50); Stroke.Color = Color3.fromRGB(255,50,50); StatusLbl.Text = "STATUS: AUTO-RESUMED"
     end
     
-    -- Status Loop
     task.spawn(function()
         while true do
             task.wait()
@@ -391,34 +358,7 @@ local function LoadSniperUI()
     end)
 end
 
--- [8] AUTHENTICATION
-local function AuthFlow()
-    if getgenv().KeyGUI then getgenv().KeyGUI:Destroy() end
-    if isfile(KeyFile) and CheckKey(readfile(KeyFile)) then
-        LoadData()
-        LoadConfig()
-        LoadSniperUI()
-        return
-    end
-
-    local ScreenGui = Instance.new("ScreenGui"); ScreenGui.Name = "GoonAuth"; ScreenGui.Parent = PlayerGui; getgenv().KeyGUI = ScreenGui
-    local Frame = Instance.new("Frame"); Frame.Parent = ScreenGui; Frame.Size = UDim2.new(0,300,0,150); Frame.Position = UDim2.new(0.5,-150,0.4,-75); Frame.BackgroundColor3 = Color3.fromRGB(15,15,15); Frame.Active = true; Frame.Draggable = true
-    Instance.new("UICorner", Frame).CornerRadius = UDim.new(0,8)
-    
-    local KeyBox = Instance.new("TextBox"); KeyBox.Parent = Frame; KeyBox.Size = UDim2.new(0.8,0,0,40); KeyBox.Position = UDim2.new(0.1,0,0.3,0); KeyBox.PlaceholderText = "Enter Key"; KeyBox.BackgroundColor3 = Color3.fromRGB(30,30,30); KeyBox.TextColor3 = Color3.fromRGB(255,255,255)
-    local Submit = Instance.new("TextButton"); Submit.Parent = Frame; Submit.Size = UDim2.new(0.8,0,0,40); Submit.Position = UDim2.new(0.1,0,0.65,0); Submit.Text = "LOGIN"; Submit.BackgroundColor3 = Color3.fromRGB(46,204,113)
-    
-    Submit.MouseButton1Click:Connect(function()
-        if CheckKey(KeyBox.Text) then
-            writefile(KeyFile, KeyBox.Text)
-            LoadData()
-            LoadConfig()
-            LoadSniperUI()
-        else
-            Submit.Text = "INVALID"; task.wait(1); Submit.Text = "LOGIN"
-        end
-    end)
-end
-
--- [9] START
-AuthFlow()
+-- [7] START (NO AUTH)
+LoadData()
+LoadConfig()
+LoadSniperUI()
